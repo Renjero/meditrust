@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   ShieldCheck, 
   Truck, 
@@ -19,6 +19,10 @@ import {
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import Loader from '../../components/common/Loader';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // ==========================================
 // MOCK DATA (Hardcoded for teaching purposes)
@@ -88,20 +92,47 @@ const MOCK_RELATED_PRODUCTS = [
 ];
 
 export default function ProductDetailPage({ onNavigate }) {
+  const navigate = useNavigate();
+  const { pid } = useParams();
+  const goHome = () => (onNavigate ? onNavigate('landing') : navigate('/'));
+  const goPharmacy = () => (onNavigate ? onNavigate('pharmacy') : navigate('/pharmacy'));
+  const goAi = () => (onNavigate ? onNavigate('ai-prescription') : navigate('/auth/ai-prescription'));
+  const goOrders = () => (onNavigate ? onNavigate('orders') : navigate('/auth/orders'));
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(MOCK_PRODUCT_DETAIL.images[0]);
+
+  const { data: realProduct, isLoading } = useQuery({
+    queryKey: ['product', pid],
+    queryFn: async () => {
+      if (!pid) return null;
+      const res = await axios.get(`/api/products/${pid}`);
+      return res.data;
+    },
+    enabled: !!pid,
+  });
+
+  const product = realProduct || MOCK_PRODUCT_DETAIL;
+  const gallery = realProduct?.image ? [realProduct.image] : MOCK_PRODUCT_DETAIL.images;
+  const [selectedImage, setSelectedImage] = useState(gallery[0]);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
+
+  useEffect(() => {
+    setSelectedImage(gallery[0]);
+  }, [realProduct?._id]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       
       {/* Breadcrumb Bar */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
-        <button onClick={() => onNavigate('landing')} className="hover:text-teal-600">Home</button>
+        <button onClick={goHome} className="hover:text-teal-600">Home</button>
         <span>/</span>
-        <button onClick={() => onNavigate('pharmacy')} className="hover:text-teal-600">Pharmacy</button>
+        <button onClick={goPharmacy} className="hover:text-teal-600">Pharmacy</button>
         <span>/</span>
-        <span className="text-slate-800 font-semibold truncate">{MOCK_PRODUCT_DETAIL.name}</span>
+        <span className="text-slate-800 font-semibold truncate">{product.name}</span>
       </div>
 
       {/* Main Product Showcase Section */}
@@ -112,7 +143,7 @@ export default function ProductDetailPage({ onNavigate }) {
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex items-center justify-center aspect-square overflow-hidden relative">
             <img
               src={selectedImage}
-              alt={MOCK_PRODUCT_DETAIL.name}
+              alt={product.name}
               className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
             />
             {MOCK_PRODUCT_DETAIL.rxRequired && (
@@ -126,7 +157,7 @@ export default function ProductDetailPage({ onNavigate }) {
 
           {/* Thumbnail row */}
           <div className="flex gap-3">
-            {MOCK_PRODUCT_DETAIL.images.map((img, i) => (
+            {gallery.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(img)}
@@ -151,7 +182,7 @@ export default function ProductDetailPage({ onNavigate }) {
               </p>
               <button
                 type="button"
-                onClick={() => onNavigate('ai-prescription')}
+                onClick={goAi}
                 className="mt-2 text-xs font-bold text-indigo-600 hover:text-indigo-800 underline inline-flex items-center gap-1"
               >
                 Upload & Verify Rx Now <ArrowRight className="w-3 h-3" />
@@ -174,7 +205,7 @@ export default function ProductDetailPage({ onNavigate }) {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-              {MOCK_PRODUCT_DETAIL.name}
+              {product.name}
             </h1>
             <p className="text-xs text-slate-500 font-medium">
               Brand: <span className="text-slate-800 font-semibold">{MOCK_PRODUCT_DETAIL.brand}</span>
@@ -199,10 +230,10 @@ export default function ProductDetailPage({ onNavigate }) {
           <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-3">
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-black text-slate-900">
-                ${(MOCK_PRODUCT_DETAIL.price * quantity).toFixed(2)}
+                ${((product.price || 0) * quantity).toFixed(2)}
               </span>
               <span className="text-base text-slate-400 line-through">
-                ${(MOCK_PRODUCT_DETAIL.originalPrice * quantity).toFixed(2)}
+                ${((product.originalPrice || product.price || 0) * quantity).toFixed(2)}
               </span>
               <span className="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-0.5 rounded-md">
                 {MOCK_PRODUCT_DETAIL.discount}
@@ -242,9 +273,9 @@ export default function ProductDetailPage({ onNavigate }) {
                 variant="primary"
                 size="lg"
                 className="w-full sm:flex-1 justify-center shadow-md shadow-teal-600/25"
-                onClick={() => onNavigate('orders')}
+                onClick={goOrders}
               >
-                Order Now (${(MOCK_PRODUCT_DETAIL.price * quantity).toFixed(2)})
+                Order Now (${((product.price || 0) * quantity).toFixed(2)})
               </Button>
             </div>
 
@@ -318,7 +349,7 @@ export default function ProductDetailPage({ onNavigate }) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onNavigate('pharmacy')}
+            onClick={goPharmacy}
           >
             Browse More
           </Button>
@@ -340,7 +371,7 @@ export default function ProductDetailPage({ onNavigate }) {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => onNavigate('orders')}
+                  onClick={goOrders}
                 >
                   Order Now
                 </Button>
