@@ -10,4 +10,7 @@ router.post("/login", authService.loginUser)
 router.get("/me", protect.forUser, authService.getMyProfile)
 router.put("/me", protect.forUser, authService.updateProfile)
 
+
+
+router.put("/change-password",protect.forUser, authService.changePassword)
 export default router

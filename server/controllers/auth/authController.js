@@ -103,7 +103,66 @@ const updateProfile = async (req, res) => {
 }
 
 
+//CHANGE OLD PASSWORD TO NEW !REST BY LINK OR MAILS ETC ARE INCLUDED
+// PASSWORD WILL ONLY CHANGE IF YOU KNOW THE OLD PASSWORD
 
+const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body
+
+    // Check if both passwords are provided
+    if (!currentPassword || !newPassword) {
+        res.status(400)
+        throw new Error("Please provide both passwords!")
+    }
+
+    // Check new password length
+    if (newPassword.length < 8) {
+        res.status(400)
+        throw new Error("New password must be at least 8 characters!")
+    }
+
+    // Find the logged-in user
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+        res.status(404)
+        throw new Error("User Not Found!")
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+    )
+
+    if (!isMatch) {
+        res.status(401)
+        throw new Error("Current Password Is Incorrect!")
+    }
+
+    // Prevent using the same password again
+    const samePassword = await bcrypt.compare(
+        newPassword,
+        user.password
+    )
+
+    if (samePassword) {
+        res.status(400)
+        throw new Error("New password must be different!")
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+    user.password = hashedPassword
+    await user.save()
+
+    res.status(200).json({
+        message: "Password Changed Successfully!"
+    })
+}
+/// CHANGE PASSWORD FUNCTION ENDS HERE
 
 
 
@@ -117,7 +176,8 @@ const authService = {
     registerUser,
     loginUser,
     getMyProfile,
-    updateProfile
+    updateProfile,
+     changePassword
 }
 
 export default authService

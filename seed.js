@@ -34,7 +34,7 @@ const users = [
         userType: "USER",
         isActive: true
     },
-
+  
     {
         name: "Priya Verma",
         email: "priya@example.com",

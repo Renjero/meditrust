@@ -41,6 +41,9 @@ import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminDoctorsPage from './pages/admin/AdminDoctorsPage';
 import AdminAllUsersPage from './pages/admin/AdminAllUsersPage';
 
+
+import ChangePassword from "./pages/auth/ChangePassword.jsx"; // CHANGE OLD PASSW0RD
+
 export default function App() {
 
   const { user } = useSelector(state => state.auth)
@@ -53,7 +56,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         {
-          !user.userType === "ADMIN" && <Navbar />
+      user?.userType !== "ADMIN" && <Navbar />
         }
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -71,10 +74,16 @@ export default function App() {
             <Route path="admin/doctors" element={<AdminDoctorsPage />} />
             <Route path="admin/pathologists" element={<AdminDoctorsPage />} />
             <Route path="admin/users" element={<AdminAllUsersPage />} />
+
+
+
+             {/* Change Password */}
+             <Route path="change-password" element={<ChangePassword />} />
+
           </Route>
         </Routes>
         {
-          !user.userType === "ADMIN" && <Footer />
+       user?.userType !== "ADMIN" && <Footer />
         }
         <Toaster />
       </Router>

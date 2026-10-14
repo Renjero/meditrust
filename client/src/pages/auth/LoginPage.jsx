@@ -22,6 +22,8 @@ import { register } from '../../features/auth/authSlice';
 
 
 
+
+
 export default function LoginPage({ onNavigate }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -53,15 +55,35 @@ export default function LoginPage({ onNavigate }) {
 
   useEffect(() => {
 
-    if (data && isSuccess) {
-      toast.success("You have been logged in")
-      dispatch(register(data))
-      if (data.userType === "ADMIN") {
-        navigate("/auth/admin")
-      } else {
-        navigate("/auth/dashboard")
-      }
-    }
+    // if (data && isSuccess) {
+    //   toast.success("You have been logged in")
+    //   dispatch(register(data))
+    //   if (data.userType === "ADMIN") {
+    //     navigate("/auth/admin")
+    //   } else {
+    //     navigate("/auth/dashboard")
+    //   }
+    // }
+
+if (data && isSuccess) {
+  // Save the login token for protected API requests
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+  }
+
+  // Save user data in localStorage for Redux persistence
+  localStorage.setItem("user", JSON.stringify(data));
+
+  toast.success("You have been logged in");
+  dispatch(register(data));
+
+  if (data.userType === "ADMIN") {
+    navigate("/auth/admin");
+  } else {
+    navigate("/auth/dashboard");
+  }
+}
+
 
 
     if (isError && isError) {

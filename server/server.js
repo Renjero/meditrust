@@ -1,60 +1,68 @@
-import dns from "dns"
-dns.setDefaultResultOrder('ipv4first');
-dns.setServers(['8.8.8.8', '8.8.4.4']);
 
+import dns from "dns";
 
-import express from "express"
-import dotenv from "dotenv"
-import colors from "colors"
-import connectDB from "./config/dbConfig.js"
+dns.setDefaultResultOrder("ipv4first");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
-dotenv.config()
+import express from "express";
+import dotenv from "dotenv";
+import colors from "colors";
+import cors from "cors";
 
-import authRoutes from "./routes/authRoutes.js"
-import adminRoutes from "./routes/adminRoutes.js"
-import aiRoutes from "./routes/aiRoutes.js"
-import productRoutes from "./routes/productRoutes.js"
-import pathologistRoutes from "./routes/pathologistRoutes.js"
-import doctorRoutes from "./routes/doctorRoutes.js"
+import connectDB from "./config/dbConfig.js";
+import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import pathologistRoutes from "./routes/pathologistRoutes.js";
+import doctorRoutes from "./routes/doctorRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 
+dotenv.config();
 
+const PORT = process.env.PORT || 5000;
 
-const PORT = process.env.PORT || 5000
-const app = express()
+// 1. Initialize Express FIRST
+const app = express();
 
+// 2. Configure CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-// DB CONNECTION
-connectDB()
+// 3. Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// 4. Connect to MongoDB
+connectDB();
 
-// Body-Parser
-app.use(express.json())
-app.use(express.urlencoded())
+// 5. AUTH ROUTES
+app.use("/api/auth", authRoutes);
 
+// 6. ADMIN ROUTES
+app.use("/api/admin", adminRoutes);
 
-// AUTH ROUTES
-app.use("/api/auth", authRoutes)
+// 7. AI ROUTES
+app.use("/api/ai", aiRoutes);
 
-// ADMIN ROUTES
-app.use("/api/admin", adminRoutes)
+// 8. PRODUCT ROUTES
+app.use("/api/products", productRoutes);
 
-// A.I Routes
-app.use("/api/ai", aiRoutes)
+// 9. PATHOLOGIST ROUTES
+app.use("/api/pathologist", pathologistRoutes);
 
-// Product Routes
-app.use("/api/products", productRoutes)
+// 10. DOCTOR ROUTES
+app.use("/api/doctor", doctorRoutes);
 
-// Pathologist Routes
-app.use("/api/pathologist", pathologistRoutes)
+// 11. ERROR HANDLER
+app.use(errorHandler);
 
-// Doctor Routes
-app.use("/api/doctor", doctorRoutes)
-
-// Error Handler
-app.use(errorHandler)
-
-
+// 12. START SERVER
 app.listen(PORT, () => {
-    console.log(`SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue)
-})
+  console.log(`SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
+});

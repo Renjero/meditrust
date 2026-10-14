@@ -301,11 +301,19 @@ export default function UserDashboardPage({ onNavigate }) {
               <Button variant="outline" size="sm">Export Data</Button>
             </div>
 
-            <div className="pt-2">
-              <Button variant="outline" size="sm" icon={KeyRound}>
-                Change Account Password
-              </Button>
-            </div>
+
+
+
+<div className="pt-2">
+  <Button
+    variant="outline"
+    size="sm"
+    icon={KeyRound}
+    onClick={() => navigate("/auth/change-password")}
+  >
+    Change Account Password
+  </Button>
+</div>
           </div>
         </Card>
       )}
