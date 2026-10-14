@@ -18,6 +18,7 @@ import Button from '../../components/common/Button';
 import { useQuery } from '@tanstack/react-query';
 import medicalService from '../../services/medicalService';
 import Loader from '../../components/common/Loader';
+import { useNavigate } from 'react-router-dom';
 
 const MOCK_CATEGORIES = [
   'All Lab Tests',
@@ -32,6 +33,9 @@ const MOCK_CATEGORIES = [
 
 
 export default function LabTestListingPage({ onNavigate }) {
+  const navigate = useNavigate();
+  const goApply = () => (onNavigate ? onNavigate('pathologist-apply') : navigate('/auth/become-pathologist'));
+  const goBooking = () => (onNavigate ? onNavigate('lab-booking') : navigate('/lab'));
   const [selectedCategory, setSelectedCategory] = useState('All Lab Tests');
 
   const { data, isLoading, isSuccess, isError, error } = useQuery({ queryKey: ['items'], queryFn: medicalService.fetchData })
@@ -80,7 +84,7 @@ export default function LabTestListingPage({ onNavigate }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onNavigate('pathologist-apply')}
+              onClick={goApply}
               className="bg-white/10 hover:bg-white/20 text-white border-white/30"
             >
               Are you an accredited laboratory? Join MediTrust Network →
@@ -170,7 +174,7 @@ export default function LabTestListingPage({ onNavigate }) {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => onNavigate('lab-booking')}
+                  onClick={goBooking}
                   icon={FlaskConical}
                 >
                   Book Test

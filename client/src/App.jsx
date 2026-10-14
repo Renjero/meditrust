@@ -53,13 +53,14 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         {
-          !user.userType === "ADMIN" && <Navbar />
+           <Navbar />
         }
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/pharmacy" element={<ProductListingPage />} />
+          <Route path="/pharmacy/:pid" element={<ProductDetailPage />} />
           <Route path="/doctors" element={<DoctorListingPage />} />
           <Route path="/lab" element={<LabTestListingPage />} />
           <Route path='/auth' element={<PrivateComponent />}>
@@ -71,10 +72,14 @@ export default function App() {
             <Route path="admin/doctors" element={<AdminDoctorsPage />} />
             <Route path="admin/pathologists" element={<AdminDoctorsPage />} />
             <Route path="admin/users" element={<AdminAllUsersPage />} />
+            <Route path="become-doctor" element={<DoctorApplicationPage />} />
+            <Route path="become-pathologist" element={<PathologistApplicationPage />} />
+            <Route path="ai-prescription" element={<PrescriptionExplainerPage />} />
+            <Route path="orders" element={<MyOrdersPage />} />
           </Route>
         </Routes>
         {
-          !user.userType === "ADMIN" && <Footer />
+           <Footer />
         }
         <Toaster />
       </Router>

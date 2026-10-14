@@ -14,6 +14,7 @@ import {
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 
 // ==========================================
 // MOCK DATA (Hardcoded for teaching purposes)
@@ -84,6 +85,14 @@ const MOCK_APPOINTMENTS = [
 const TABS = ['All Appointments', 'Upcoming', 'Completed', 'Cancelled'];
 
 export default function MyAppointmentsPage({ onNavigate }) {
+  const navigate = useNavigate();
+  const go = (id) => {
+    if (onNavigate) return onNavigate(id);
+    if (id === 'doctors') navigate('/doctors');
+    if (id === 'doctor-booking') navigate('/doctors');
+    if (id === 'pharmacy') navigate('/pharmacy');
+    return navigate('/auth/dashboard');
+  };
   const [activeTab, setActiveTab] = useState('All Appointments');
 
   const filteredAppointments = MOCK_APPOINTMENTS.filter((apt) => {
@@ -111,7 +120,7 @@ export default function MyAppointmentsPage({ onNavigate }) {
         <Button
           variant="primary"
           size="sm"
-          onClick={() => onNavigate('doctors')}
+          onClick={() => go('doctors')}
           icon={Calendar}
         >
           Book New Consultation
@@ -213,7 +222,7 @@ export default function MyAppointmentsPage({ onNavigate }) {
                       variant="secondary"
                       size="sm"
                       icon={FileText}
-                      onClick={() => onNavigate('pharmacy')}
+                      onClick={() => go('pharmacy')}
                     >
                       View & Order Prescribed Meds
                     </Button>
@@ -225,7 +234,7 @@ export default function MyAppointmentsPage({ onNavigate }) {
                         variant="outline"
                         size="sm"
                         icon={RotateCw}
-                        onClick={() => onNavigate('doctor-booking')}
+                        onClick={() => go('doctor-booking')}
                       >
                         Reschedule
                       </Button>

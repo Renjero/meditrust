@@ -31,9 +31,11 @@ import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import LoaderScreen from "../../components/common/Loader";
 import AdminSidebar from "../../components/admin/AdminSidebar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function AdminDashboardPage({ onNavigate }) {
+  const navigate = useNavigate();
+  const goHome = () => (onNavigate ? onNavigate("landing") : navigate("/"));
   const { user } = useSelector((state) => state.auth);
 
   let { pathname } = useLocation();
@@ -138,7 +140,7 @@ export default function AdminDashboardPage({ onNavigate }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onNavigate("landing")}>
+              onClick={goHome}>
               Exit to Patient Portal
             </Button>
           </div>

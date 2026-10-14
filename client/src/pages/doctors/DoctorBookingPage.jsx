@@ -18,6 +18,7 @@ import {
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 
 // ==========================================
 // MOCK DATA (Hardcoded for teaching purposes)
@@ -74,6 +75,14 @@ const MOCK_SLOTS = {
 };
 
 export default function DoctorBookingPage({ onNavigate }) {
+  const navigate = useNavigate();
+  const go = (id) => {
+    if (onNavigate) return onNavigate(id);
+    if (id === 'landing') navigate('/');
+    if (id === 'doctors') navigate('/doctors');
+    if (id === 'my-appointments') navigate('/auth/dashboard');
+    return navigate('/doctors');
+  };
   const [selectedDay, setSelectedDay] = useState('Today');
   const [selectedSlot, setSelectedSlot] = useState('03:30 PM');
   const [consultMode, setConsultMode] = useState('video'); // 'video' | 'clinic'
@@ -83,9 +92,9 @@ export default function DoctorBookingPage({ onNavigate }) {
       
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
-        <button onClick={() => onNavigate('landing')} className="hover:text-teal-600">Home</button>
+        <button onClick={() => go('landing')} className="hover:text-teal-600">Home</button>
         <span>/</span>
-        <button onClick={() => onNavigate('doctors')} className="hover:text-teal-600">Doctors</button>
+        <button onClick={() => go('doctors')} className="hover:text-teal-600">Doctors</button>
         <span>/</span>
         <span className="text-slate-800 font-semibold truncate">Book Appointment</span>
       </div>
@@ -383,7 +392,7 @@ export default function DoctorBookingPage({ onNavigate }) {
               variant="primary"
               size="lg"
               className="w-full justify-center shadow-md shadow-teal-600/25"
-              onClick={() => onNavigate('my-appointments')}
+              onClick={() => go('my-appointments')}
             >
               Confirm & Book Appointment
             </Button>

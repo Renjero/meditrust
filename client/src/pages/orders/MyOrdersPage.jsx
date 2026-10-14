@@ -16,6 +16,7 @@ import {
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 
 // ==========================================
 // MOCK DATA (Hardcoded for teaching purposes)
@@ -115,6 +116,8 @@ const MOCK_ORDERS = [
 const FILTER_TABS = ['All Orders', 'Pending / Processing', 'Shipped', 'Delivered', 'Cancelled'];
 
 export default function MyOrdersPage({ onNavigate }) {
+  const navigate = useNavigate();
+  const goPharmacy = () => (onNavigate ? onNavigate('pharmacy') : navigate('/pharmacy'));
   const [activeTab, setActiveTab] = useState('All Orders');
   const [showEmptyState, setShowEmptyState] = useState(false);
 
@@ -156,7 +159,7 @@ export default function MyOrdersPage({ onNavigate }) {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => onNavigate('pharmacy')}
+            onClick={goPharmacy}
             icon={ShoppingBag}
           >
             Order Medicines
@@ -205,7 +208,7 @@ export default function MyOrdersPage({ onNavigate }) {
             <Button
               variant="primary"
               size="md"
-              onClick={() => onNavigate('pharmacy')}
+              onClick={goPharmacy}
               icon={ArrowRight}
               iconPosition="right"
             >
@@ -305,7 +308,7 @@ export default function MyOrdersPage({ onNavigate }) {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => onNavigate('pharmacy')}
+                    onClick={goPharmacy}
                     icon={RotateCw}
                   >
                     Reorder

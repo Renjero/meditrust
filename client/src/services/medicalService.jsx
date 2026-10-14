@@ -19,6 +19,26 @@ const fetchData = async () => {
 
 }
 
-const medicalService = { fetchData }
+const becomeDoctor = async (payload, token) => {
+    const options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.post("/api/doctor/request", payload, options)
+    return response.data
+}
+
+const becomePathologist = async (payload, token) => {
+    const options = {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    }
+    const response = await axios.post("/api/pathologist/request", payload, options)
+    return response.data
+}
+
+const medicalService = { fetchData, becomeDoctor, becomePathologist }
 
 export default medicalService
